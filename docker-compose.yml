@@ -1,0 +1,33 @@
+services:
+  bot:
+    image: travelagent
+    build:
+      context: .
+    stop_signal: SIGKILL
+    restart: on-failure
+    depends_on:
+      - redis
+      - postgres
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=postgres://secret@postgres:5432/postgres
+
+  redis:
+    image: redis:7-alpine
+    restart: on-failure
+    volumes:
+      - redis_data:/data
+
+  postgres:
+    image: postgres:15-alpine
+    restart: on-failure
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+
+volumes:
+  redis_data:
+  postgres_data:
